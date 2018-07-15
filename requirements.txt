@@ -1,2 +1,4 @@
+markdown
+
 django-contrib-comments
 django-mptt
