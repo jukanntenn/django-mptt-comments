@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
-
 import markdown
 from django.db import models
 from django.db.models import TextField
 from django.utils.translation import ugettext_lazy as _
 from django_comments.models import CommentAbstractModel
 from mptt.models import MPTTModel, TreeForeignKey
+
+import bleach
+
+from .utils import bleach_value
 
 
 class MarkedTextField(TextField):
@@ -38,6 +41,9 @@ class MarkedTextField(TextField):
 
         md = markdown.Markdown(extensions=extensions)
         value = md.convert(value)
+        value = bleach_value(value)
+        value = bleach.linkify(value)
+
         setattr(model_instance, self.attname, value)
 
         return value
