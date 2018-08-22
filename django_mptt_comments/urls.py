@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.views.generic import TemplateView
 
 from . import views
-
 
 app_name = 'django_mptt_comments'
 urlpatterns = [
@@ -32,4 +31,4 @@ urlpatterns = [
         view=views.MpttCommentListView.as_view(),
         name='MpttComment_list',
     ),
-	]
+]

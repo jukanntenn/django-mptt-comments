@@ -6,4 +6,5 @@ from django.conf.urls import url, include
 
 urlpatterns = [
     url(r'^', include('django_mptt_comments.urls', namespace='django_mptt_comments')),
+    url(r'^', include('captcha.urls')),
 ]

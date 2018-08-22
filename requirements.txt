@@ -1,5 +1,5 @@
 bleach
 markdown
-
+django-simple-captcha
 django-contrib-comments
 django-mptt

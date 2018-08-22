@@ -55,7 +55,7 @@ class MarkedTextField(TextField):
         return name, path, args, kwargs
 
 
-class MpttComment(MPTTModel, CommentAbstractModel):
+class MPTTComment(MPTTModel, CommentAbstractModel):
     parent = TreeForeignKey('self', verbose_name=_('parent comment'), blank=True, null=True,
                             related_name='children', on_delete=models.SET_NULL)
     comment_html = MarkedTextField(source='comment', verbose_name=_('comment (html)'), blank=True)

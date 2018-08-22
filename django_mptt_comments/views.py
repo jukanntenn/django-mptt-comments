@@ -8,31 +8,25 @@ from django.views.generic import (
 )
 
 from .models import (
-	MpttComment,
+    MPTTComment,
 )
 
 
 class MpttCommentCreateView(CreateView):
-
-    model = MpttComment
+    model = MPTTComment
 
 
 class MpttCommentDeleteView(DeleteView):
-
-    model = MpttComment
+    model = MPTTComment
 
 
 class MpttCommentDetailView(DetailView):
-
-    model = MpttComment
+    model = MPTTComment
 
 
 class MpttCommentUpdateView(UpdateView):
-
-    model = MpttComment
+    model = MPTTComment
 
 
 class MpttCommentListView(ListView):
-
-    model = MpttComment
-
+    model = MPTTComment

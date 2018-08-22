@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     "django_mptt_comments",
     "django_comments",
     "tests",
+    'captcha',
 ]
 
 SITE_ID = 1
