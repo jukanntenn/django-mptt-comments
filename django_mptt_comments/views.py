@@ -1,32 +1,8 @@
-# -*- coding: utf-8 -*-
-from django.views.generic import (
-    CreateView,
-    DeleteView,
-    DetailView,
-    UpdateView,
-    ListView
-)
+from django_comments.views.comments import post_comment as post_comment
+from django.contrib.auth.decorators import login_required
+from django.conf import settings
 
-from .models import (
-    MPTTComment,
-)
-
-
-class MpttCommentCreateView(CreateView):
-    model = MPTTComment
-
-
-class MpttCommentDeleteView(DeleteView):
-    model = MPTTComment
-
-
-class MpttCommentDetailView(DetailView):
-    model = MPTTComment
-
-
-class MpttCommentUpdateView(UpdateView):
-    model = MPTTComment
-
-
-class MpttCommentListView(ListView):
-    model = MPTTComment
+if settings.MPTT_COMMENTS_ALLOW_ANONYMOUS:
+    post_mptt_comment = post_comment
+else:
+    post_mptt_comment = login_required(post_comment)
