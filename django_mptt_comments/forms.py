@@ -14,12 +14,14 @@ class MPTTCommentForm(CommentForm):
             initial = {}
         initial.update({'parent': self.parent})
         super(MPTTCommentForm, self).__init__(target_object, data=data, initial=initial, **kwargs)
-
+        print('self.user is None')
         if self.user is not None:
+            print('self.user is not None')
             if self.user.is_authenticated:
                 self.fields['email'].required = False
                 self.fields['name'].required = False
             else:
+                print('yes')
                 self.fields['captcha'] = CaptchaField()
 
     def get_comment_create_data(self, **kwargs):

@@ -1,0 +1,11 @@
+{% extends 'django_mptt_comments/base.html' %}
+{% load comments %}
+{% load mptt_comment_tags %}
+{% block content %}
+  <h1>{{ post.title }}</h1>
+  <p>{{ post.body }}</p>
+  <div>
+    <h3>Comments</h3>
+    {% render_mptt_comment_form for post %}
+  </div>
+{% endblock %}

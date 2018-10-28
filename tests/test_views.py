@@ -1,10 +1,12 @@
-from django.test import RequestFactory, TestCase
-
-from django_mptt_comments.views import post_mptt_comment
-from django.urls import reverse
-from django.contrib.auth.models import AnonymousUser, User
-from django.test import override_settings, modify_settings
 from django.conf import settings
+from django.contrib.auth.models import AnonymousUser, User
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.models import Site
+from django.test import RequestFactory, TestCase, modify_settings, override_settings
+from django.urls import reverse
+
+from django_mptt_comments.models import MPTTComment
+from django_mptt_comments.views import ReplySuccessView, ReplyView, post_mptt_comment
 
 
 class MPTTCommentsPostCommentTestCase(TestCase):
@@ -25,3 +27,27 @@ class MPTTCommentsPostCommentTestCase(TestCase):
     #     response = self.client.post(reverse('django_mptt_comments:mptt-comments-post-comment'), data={})
     #     self.assertEqual(response.status_code, 302)
     #     self.assertEqual(response.url, settings.LOGIN_URL + '?next=/post/')
+
+
+class ReplyViewTestCase(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(username='test', email='test@test.com', password='test')
+        site = Site.objects.create(name='test', domain='test.com')
+        self.comment = MPTTComment.objects.create(**{
+            'content_type': ContentType.objects.get_for_model(site),
+            'object_pk': site.pk,
+            'site': site,
+            'user': self.user,
+            'comment': 'test comment',
+        })
+
+    def test_reply(self):
+        url = reverse('django_mptt_comments:mptt_comments_reply', kwargs={'parent': self.comment.pk})
+        request = self.factory.get(url)
+        request.user = self.user
+        response = ReplyView.as_view()(request, parent=self.comment.pk)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('form', response.context_data)
+        self.assertEqual(response.context_data['form'].initial['parent'], self.comment.pk)

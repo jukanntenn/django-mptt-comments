@@ -1,0 +1,11 @@
+{% extends 'django_mptt_comments/base.html' %}
+{% block content %}
+  <h3>All Posts</h3>
+  <div>
+    {% for post in post_list %}
+      <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+      <p>created at {{ post.created }}</p>
+      <p>{{ post.body }}</p>
+    {% endfor %}
+  </div>
+{% endblock %}
