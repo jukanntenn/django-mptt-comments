@@ -27,7 +27,7 @@
   {% for hidden in form.hidden_fields %}
     {{ hidden }}
   {% endfor %}
-  <input type="hidden" name="next" value="{% url 'django_mptt_comments:comment_success' %}">
+  <input type="hidden" name="next" value="{% url 'comment_success' %}">
   {% if user.is_authenticated %}
     {{ form.comment.label_tag }}
     {{ form.comment.errors }}

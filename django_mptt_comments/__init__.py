@@ -14,4 +14,4 @@ def get_form():
 
 
 def get_form_target():
-    return reverse('django_mptt_comments:mptt-comments-post-comment')
+    return reverse('mptt-comments-post-comment')

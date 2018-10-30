@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "django_comments",
     'captcha',
     'blog',
+    'crequest',
 ]
 
 COMMENTS_APP = 'django_mptt_comments'
@@ -56,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'crequest.middleware.CrequestMiddleware',
 ]
 
 ROOT_URLCONF = 'example.urls'

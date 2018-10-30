@@ -48,3 +48,6 @@ docs/_build
 
 # Virtualenv
 .venv
+
+# Local
+*.sqlite3

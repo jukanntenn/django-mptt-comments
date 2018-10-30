@@ -7,7 +7,7 @@ from . import views
 
 from . import views
 
-app_name = 'django_mptt_comments'
+# app_name = 'django_mptt_comments'
 urlpatterns = [
     url(r'^post/$', views.post_mptt_comment, name='mptt-comments-post-comment'),
     url(r'^reply/(?P<parent>[0-9]+)/$', views.ReplyView.as_view(), name='mptt_comments_reply'),

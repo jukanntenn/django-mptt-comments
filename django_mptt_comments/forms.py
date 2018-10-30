@@ -2,6 +2,7 @@ from django import forms
 from django_comments.forms import CommentForm
 
 from captcha.fields import CaptchaField
+from crequest.middleware import CrequestMiddleware
 
 
 class MPTTCommentForm(CommentForm):
@@ -14,14 +15,18 @@ class MPTTCommentForm(CommentForm):
             initial = {}
         initial.update({'parent': self.parent})
         super(MPTTCommentForm, self).__init__(target_object, data=data, initial=initial, **kwargs)
-        print('self.user is None')
         if self.user is not None:
-            print('self.user is not None')
             if self.user.is_authenticated:
                 self.fields['email'].required = False
                 self.fields['name'].required = False
             else:
-                print('yes')
+                self.fields['captcha'] = CaptchaField()
+        else:
+            current_request = CrequestMiddleware.get_request()
+            if current_request.user.is_authenticated:
+                self.fields['email'].required = False
+                self.fields['name'].required = False
+            else:
                 self.fields['captcha'] = CaptchaField()
 
     def get_comment_create_data(self, **kwargs):
