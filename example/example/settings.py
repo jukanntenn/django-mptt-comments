@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'captcha',
     'blog',
     'crequest',
+    'mptt',
 ]
 
 COMMENTS_APP = 'django_mptt_comments'

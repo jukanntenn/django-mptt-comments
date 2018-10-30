@@ -32,5 +32,5 @@ class MPTTCommentForm(CommentForm):
     def get_comment_create_data(self, **kwargs):
         data = super(MPTTCommentForm, self).get_comment_create_data(**kwargs)
         parent = self.cleaned_data.get('parent')
-        data['parent'] = parent
+        data['parent_id'] = parent
         return data
