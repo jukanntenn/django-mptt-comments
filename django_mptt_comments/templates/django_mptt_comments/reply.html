@@ -8,7 +8,7 @@
 <div id="c{{ mpttcomment.id }}">
   {{ mpttcomment.submit_date }} - {{ mpttcomment.name }}
 </div>
-<p>{{ mpttcomment.comment }}</p>
+<p>{{ mpttcomment.comment_html|safe }}</p>
 <br>
 {% include 'comments/form.html' with form=form %}
 </body>
