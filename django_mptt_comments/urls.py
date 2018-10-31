@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import url, include
-from django.views.generic import TemplateView
-from django.urls import path, re_path
-
-from . import views
 
 from . import views
 
