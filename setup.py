@@ -23,10 +23,10 @@ def get_version(*file_paths):
 
 version = get_version("django_mptt_comments", "__init__.py")
 
-
 if sys.argv[-1] == 'publish':
     try:
         import wheel
+
         print("Wheel version: ", wheel.__version__)
     except ImportError:
         print('Wheel library missing. Please run "pip install wheel"')
@@ -56,7 +56,16 @@ setup(
         'django_mptt_comments',
     ],
     include_package_data=True,
-    install_requires=["django-model-utils>=2.0",],
+    install_requires=[
+        "django-model-utils>=2.0",
+        "django-model-utils>=2.0",
+        "bleach",
+        "markdown",
+        "django-simple-captcha",
+        "django-contrib-comments",
+        "django-mptt",
+        "django-crequest",
+    ],
     license="MIT",
     zip_safe=False,
     keywords='django-mptt-comments',
