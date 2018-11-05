@@ -1,5 +1,6 @@
 # django-mptt-comments
 
+拓展 django 官方的评论库，为评论提供无限层级的支持。
 
 ## 安装
 
@@ -8,23 +9,30 @@
 
     pip install django-mptt-comments
 
-将应用添加到 `INSTALLED_APPS`:
+将应用及其依赖添加到 `INSTALLED_APPS`:
 
     INSTALLED_APPS = (
         ...
+        'django.contrib.sites',
         'django_comments',
         'django_mptt_comments',
+        'captcha',
+        'mptt',
         ...
     )
+    
+添加必要的 settings 设置：
+
+    MPTT_COMMENTS_ALLOW_ANONYMOUS = True # True 为允许匿名评论，否则不允许
+    COMMENTS_APP = 'django_mptt_comments'
+    SITE_ID = 1
 
 添加应用的 URL:
 
-    from django_mptt_comments import urls as django_mptt_comments_urls
-
-
     urlpatterns = [
         ...
-        url(r'^', include(django_mptt_comments_urls)),
+        url(r'mpttcomments', include('django_mptt_comments.urls')),
+        url(r'captcha', include('captcha.urls')),
         ...
     ]
 
@@ -35,6 +43,10 @@
         ...
         'crequest.middleware.CrequestMiddleware',
     ]
+    
+设置数据库（一定先备份原数据库！！！）
+
+    python manage.py migrate
 
 ## 渲染评论表单
 
