@@ -4,6 +4,8 @@ from django.test import TestCase
 
 from captcha.models import CaptchaStore
 from django_mptt_comments.forms import MPTTCommentForm
+from django.test import RequestFactory
+from crequest.middleware import CrequestMiddleware
 
 
 class MPTTCommentFormTestCase(TestCase):
@@ -11,9 +13,13 @@ class MPTTCommentFormTestCase(TestCase):
         self.target_object = Site.objects.create(name='test', domain='test.com')
         self.auth_user = User.objects.create_user('user', 'test')
         self.anon_user = AnonymousUser()
+        self.request = RequestFactory().get('/')
 
     def test_valid_authenticated_comment_form(self):
-        form = MPTTCommentForm(target_object=self.target_object, user=self.auth_user)
+        self.request.user = self.auth_user
+        CrequestMiddleware.set_request(self.request)
+
+        form = MPTTCommentForm(target_object=self.target_object)
         str(form)  # display the form
         comment_data = {
             'comment': 'comment',
@@ -22,12 +28,15 @@ class MPTTCommentFormTestCase(TestCase):
         form_data = form.initial
         form_data.update(comment_data)
 
-        new_form = MPTTCommentForm(target_object=self.target_object, data=form_data, user=self.auth_user)
+        new_form = MPTTCommentForm(target_object=self.target_object, data=form_data)
         self.assertTrue(new_form.is_valid())
         self.assertNotIn('captcha', new_form.fields)
 
     def test_invalid_authenticated_comment_form(self):
-        form = MPTTCommentForm(target_object=self.target_object, user=self.auth_user)
+        self.request.user = self.auth_user
+        CrequestMiddleware.set_request(self.request)
+
+        form = MPTTCommentForm(target_object=self.target_object)
         str(form)  # display the form
         comment_data = {
             'site_id': 1,
@@ -35,13 +44,16 @@ class MPTTCommentFormTestCase(TestCase):
         form_data = form.initial
         form_data.update(comment_data)
 
-        new_form = MPTTCommentForm(target_object=self.target_object, data=form_data, user=self.auth_user)
+        new_form = MPTTCommentForm(target_object=self.target_object, data=form_data)
         self.assertFalse(new_form.is_valid())
         self.assertIn('comment', new_form.errors)
         self.assertNotIn('captcha', new_form.fields)
 
     def test_valid_anonymous_form(self):
-        form = MPTTCommentForm(target_object=self.target_object, user=self.anon_user)
+        self.request.user = self.anon_user
+        CrequestMiddleware.set_request(self.request)
+
+        form = MPTTCommentForm(target_object=self.target_object)
         str(form)  # display the form
         comment_data = {
             'name': 'user',
@@ -54,11 +66,14 @@ class MPTTCommentFormTestCase(TestCase):
         form_data = form.initial
         form_data.update(comment_data)
 
-        new_form = MPTTCommentForm(target_object=self.target_object, data=form_data, user=self.anon_user)
+        new_form = MPTTCommentForm(target_object=self.target_object, data=form_data)
         self.assertTrue(new_form.is_valid())
 
     def test_invalid_anonymous_form(self):
-        form = MPTTCommentForm(target_object=self.target_object, user=self.anon_user)
+        self.request.user = self.anon_user
+        CrequestMiddleware.set_request(self.request)
+
+        form = MPTTCommentForm(target_object=self.target_object)
         str(form)  # display the form
         comment_data = {
             'captcha_1': 'wrong text',  # captcha text
@@ -69,7 +84,7 @@ class MPTTCommentFormTestCase(TestCase):
         form_data = form.initial
         form_data.update(comment_data)
 
-        new_form = MPTTCommentForm(target_object=self.target_object, data=form_data, user=self.anon_user)
+        new_form = MPTTCommentForm(target_object=self.target_object, data=form_data)
         self.assertFalse(new_form.is_valid())
         self.assertIn('name', new_form.errors)
         self.assertIn('email', new_form.errors)

@@ -7,6 +7,7 @@ from django.urls import reverse
 
 from django_mptt_comments.models import MPTTComment
 from django_mptt_comments.views import ReplySuccessView, ReplyView, post_mptt_comment
+from crequest.middleware import CrequestMiddleware
 
 
 class MPTTCommentsPostCommentTestCase(TestCase):
@@ -46,8 +47,9 @@ class ReplyViewTestCase(TestCase):
         url = reverse('mptt_comments_reply', kwargs={'parent': self.comment.pk})
         request = self.factory.get(url)
         request.user = self.user
+        CrequestMiddleware.set_request(request)
         response = ReplyView.as_view()(request, parent=self.comment.pk)
 
         self.assertEqual(response.status_code, 200)
         self.assertIn('form', response.context_data)
-        self.assertEqual(response.context_data['form'].initial['parent'], self.comment.pk)
+        self.assertEqual(response.context_data['form'].initial['parent_id'], self.comment.pk)

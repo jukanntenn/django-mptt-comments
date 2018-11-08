@@ -25,8 +25,7 @@ class ReplyView(FormMixin, DetailView):
         kwargs = super(ReplyView, self).get_form_kwargs()
         kwargs.update({
             'target_object': self.object.content_object,
-            'parent': self.object.pk,
-            'user': self.request.user
+            'parent_id': self.object.pk,
         })
         return kwargs
 
