@@ -6,7 +6,7 @@
   <p>{{ post.body }}</p>
   <div>
     <h3>Comments</h3>
-    {% render_mptt_comment_form for post %}
+    {% render_comment_form for post %}
     {% render_comment_list for post %}
   </div>
 {% endblock %}
