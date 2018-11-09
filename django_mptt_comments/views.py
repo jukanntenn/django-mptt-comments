@@ -18,7 +18,7 @@ else:
 class ReplyView(FormMixin, DetailView):
     model = MPTTComment
     form_class = MPTTCommentForm
-    pk_url_kwarg = 'parent'
+    pk_url_kwarg = 'parent_id'
     template_name = 'django_mptt_comments/reply.html'
 
     def get_form_kwargs(self):

@@ -18,7 +18,7 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'', include('django_mptt_comments.urls')),
-    url(r'', include('blog.urls')),
-    url(r'', include('captcha.urls')),
+    url(r'^comments/', include('django_mptt_comments.urls')),
+    url(r'^', include('blog.urls')),
+    url(r'^captcha', include('captcha.urls')),
 ]

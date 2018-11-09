@@ -14,4 +14,4 @@ def get_form():
 
 
 def get_form_target():
-    return reverse('mptt-comments-post-comment')
+    return reverse('mptt_comments_post_comment')

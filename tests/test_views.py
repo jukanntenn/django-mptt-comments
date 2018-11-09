@@ -18,7 +18,7 @@ class MPTTCommentsPostCommentTestCase(TestCase):
 
     def test_authenticated_user_post_comment(self):
         self.client.login(username='test', password='test')
-        response = self.client.post(reverse('mptt-comments-post-comment'), data={})
+        response = self.client.post(reverse('mptt_comments_post_comment'), data={})
         self.assertEqual(response.status_code, 400)
 
     # TODO: override_settings doesn't work as control is module level.
@@ -44,11 +44,11 @@ class ReplyViewTestCase(TestCase):
         })
 
     def test_reply(self):
-        url = reverse('mptt_comments_reply', kwargs={'parent': self.comment.pk})
+        url = reverse('mptt_comments_reply', kwargs={'parent_id': self.comment.pk})
         request = self.factory.get(url)
         request.user = self.user
         CrequestMiddleware.set_request(request)
-        response = ReplyView.as_view()(request, parent=self.comment.pk)
+        response = ReplyView.as_view()(request, parent_id=self.comment.pk)
 
         self.assertEqual(response.status_code, 200)
         self.assertIn('form', response.context_data)
