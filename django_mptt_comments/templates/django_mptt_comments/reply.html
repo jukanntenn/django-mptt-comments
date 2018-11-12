@@ -2,14 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Title</title>
+  <title>Reply to {{ mpttcomment.name }}</title>
+
+  <style>
+    .user-name {
+      color: #aaa;
+    }
+
+    .small {
+      color: #aaa;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
-<div id="c{{ mpttcomment.id }}">
-  {{ mpttcomment.submit_date }} - {{ mpttcomment.name }}
+<h3>Reply to <span class="user-name">{{ mpttcomment.name }}</span></h3>
+<div id="c{{ mpttcomment.id }}" class="small">
+  {{ mpttcomment.submit_date | timesince }} ago by {{ mpttcomment.name }}
 </div>
 <p>{{ mpttcomment.comment_html|safe }}</p>
-<br>
+<hr>
 {% include 'comments/form.html' with form=form %}
 </body>
 </html>
