@@ -9,7 +9,7 @@ class Post(models.Model):
     created = models.DateTimeField(default=timezone.now)
 
     class Meta:
-        ordering = ['created']
+        ordering = ['-created']
 
     def __str__(self):
         return self.title

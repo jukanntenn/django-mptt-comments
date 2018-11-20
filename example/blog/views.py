@@ -1,6 +1,5 @@
 from django.views.generic import ListView, DetailView
 
-from django_mptt_comments.models import MPTTComment
 from .models import Post
 
 

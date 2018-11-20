@@ -1,11 +1,26 @@
 {% extends 'django_mptt_comments/base.html' %}
+{% load comments %}
 {% block content %}
-  <h3>All Posts</h3>
+  <h1>All Posts</h1>
   <div>
     {% for post in post_list %}
       <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
-      <p>created at {{ post.created }}</p>
+      <p>
+        created at {{ post.created | timesince }} ago
+        {% get_comment_count for post as comment_count %}
+        {% if comment_count == 1 %}
+          - {{ comment_count }} comment
+        {% elif comment_count > 1 %}
+          - {{ comment_count }} comments
+        {% endif %}
+      </p>
       <p>{{ post.body }}</p>
+
+      {% if not forloop.last %}
+        <hr>
+      {% endif %}
+    {% empty %}
+      No posts yet.
     {% endfor %}
   </div>
 {% endblock %}

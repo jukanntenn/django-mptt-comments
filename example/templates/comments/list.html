@@ -2,8 +2,9 @@
 
 <dl id="comments">
   {% recursetree comment_list %}
-    <dt id="c{{ node.id }}">
-      {{ node.submit_date }} - {{ node.name }} <a href="{% url 'mptt_comments_reply' node.pk %}">reply</a>
+    <dt id="c{{ node.id }}" style="font-size: 14px; color: #aaa">
+      {{ node.submit_date | timesince }} ago by {{ node.name }} <a
+      href="{% url 'mptt_comments_reply' node.pk %}">reply</a>
     </dt>
     <dd>
       <p>{{ node.comment_html|safe }}</p>

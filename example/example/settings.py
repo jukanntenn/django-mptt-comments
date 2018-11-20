@@ -42,9 +42,11 @@ INSTALLED_APPS = [
     # they should be added here
     "django_comments",
     'captcha',
-    'blog',
     'crequest',
     'mptt',
+
+    # local apps
+    'blog',
 ]
 
 COMMENTS_APP = 'django_mptt_comments'

@@ -9,7 +9,9 @@ from django_comments.views.comments import post_comment
 from .forms import MPTTCommentForm
 from .models import MPTTComment
 
-if settings.MPTT_COMMENTS_ALLOW_ANONYMOUS:
+MPTT_COMMENTS_ALLOW_ANONYMOUS = getattr(settings, 'MPTT_COMMENTS_ALLOW_ANONYMOUS', True)
+
+if MPTT_COMMENTS_ALLOW_ANONYMOUS:
     post_mptt_comment = post_comment
 else:
     post_mptt_comment = login_required(post_comment)
@@ -30,18 +32,25 @@ class ReplyView(FormMixin, DetailView):
         return kwargs
 
 
-class ReplySuccessView(RedirectView):
-    def get_redirect_url(self, *args, **kwargs):
-        self.url = self.comment.get_absolute_url()
-        return super(ReplySuccessView, self).get_redirect_url(*args, **kwargs)
+class CommentSuccessRedirectView(RedirectView):
+    pattern_name = 'comments-comment-done'  # 如果跳转回新评论页面失败，就会跳转到这个页面
 
-    def get(self, request, *args, **kwargs):
-        self.comment = None
+    def dispatch(self, request, *args, **kwargs):
         if 'c' in request.GET:
             try:
                 self.comment = django_comments.get_model().objects.get(
                     pk=request.GET['c'])
             except (ObjectDoesNotExist, ValueError):
                 pass
-        if self.comment and self.comment.is_public:
-            return super(ReplySuccessView, self).get(request, *args, **kwargs)
+        return super(CommentSuccessRedirectView, self).dispatch(request, *args, **kwargs)
+
+    def get_redirect_url(self, *args, **kwargs):
+        try:
+            comment = self.comment
+            comment.content_object.get_absolute_url()  # 没有 get_absolute_url 方法后续跳转不会成功
+
+            if self.comment.is_public and not self.comment.is_removed:
+                self.url = comment.get_absolute_url()
+        except AttributeError:
+            pass
+        return super(CommentSuccessRedirectView, self).get_redirect_url(*args, **kwargs)

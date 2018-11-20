@@ -67,3 +67,13 @@
     {% render_comment_list for post %}
     
 这将渲染 comments/list.html 页面，所以同样可以自定义渲染样式，方法和渲染表单类似。
+
+## 运行 example 工程
+1. 克隆项目到本地
+2. 进入 example 文件夹
+3. 【可选，推荐】创建虚拟环境
+4. 安装依赖
+5. 创建数据库
+6. 导入数据
+7. 运行 manage.py runserver
+8. 访问 127.0.0.1:8000
