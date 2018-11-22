@@ -4,3 +4,4 @@ django-simple-captcha
 django-contrib-comments
 django-mptt
 django-crequest
+django-simple-captcha

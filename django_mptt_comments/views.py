@@ -9,7 +9,7 @@ from django_comments.views.comments import post_comment
 from .forms import MPTTCommentForm
 from .models import MPTTComment
 
-MPTT_COMMENTS_ALLOW_ANONYMOUS = getattr(settings, 'MPTT_COMMENTS_ALLOW_ANONYMOUS', True)
+from .conf import MPTT_COMMENTS_ALLOW_ANONYMOUS
 
 if MPTT_COMMENTS_ALLOW_ANONYMOUS:
     post_mptt_comment = post_comment
@@ -42,7 +42,8 @@ class CommentSuccessRedirectView(RedirectView):
                     pk=request.GET['c'])
             except (ObjectDoesNotExist, ValueError):
                 pass
-        return super(CommentSuccessRedirectView, self).dispatch(request, *args, **kwargs)
+        return super(CommentSuccessRedirectView, self).dispatch(request, *args,
+                                                                **kwargs)
 
     def get_redirect_url(self, *args, **kwargs):
         try:
@@ -53,4 +54,5 @@ class CommentSuccessRedirectView(RedirectView):
                 self.url = comment.get_absolute_url()
         except AttributeError:
             pass
-        return super(CommentSuccessRedirectView, self).get_redirect_url(*args, **kwargs)
+        return super(CommentSuccessRedirectView, self).get_redirect_url(*args,
+                                                                        **kwargs)

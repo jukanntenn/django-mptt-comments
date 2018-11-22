@@ -34,6 +34,7 @@ class MarkedTextField(TextField):
         if value is None or value == '':
             return value
 
+        # TODO: 参考官方文档拓展并配置
         extensions = [
             'markdown.extensions.extra',
             'markdown.extensions.codehilite',
@@ -56,9 +57,12 @@ class MarkedTextField(TextField):
 
 
 class MPTTComment(MPTTModel, CommentAbstractModel):
-    parent = TreeForeignKey('self', verbose_name=_('parent comment'), blank=True, null=True,
+    parent = TreeForeignKey('self', verbose_name=_('parent comment'),
+                            blank=True, null=True,
                             related_name='children', on_delete=models.SET_NULL)
-    comment_html = MarkedTextField(source='comment', verbose_name=_('comment (html)'), blank=True)
+    comment_html = MarkedTextField(source='comment',
+                                   verbose_name=_('comment (html)'),
+                                   blank=True)
 
     class Meta(CommentAbstractModel.Meta):
         ordering = ['-submit_date']
