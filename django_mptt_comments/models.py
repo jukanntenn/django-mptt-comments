@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import bleach
 import markdown
 from django.db import models
 from django.db.models import TextField
@@ -6,8 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from django_comments.models import CommentAbstractModel
 from mptt.models import MPTTModel, TreeForeignKey
 
-import bleach
-
+from .conf import MARKDOWN_EXTENSIONS
 from .utils import bleach_value
 
 
@@ -34,17 +34,15 @@ class MarkedTextField(TextField):
         if value is None or value == '':
             return value
 
-        # TODO: 参考官方文档拓展并配置
-        extensions = [
-            'markdown.extensions.extra',
-            'markdown.extensions.codehilite',
-        ]
-
-        md = markdown.Markdown(extensions=extensions)
+        md = markdown.Markdown(extensions=MARKDOWN_EXTENSIONS)
+        # Markdown 文本测试存在一个问题，如果原始 html 文本下跟一段 fenced 代码段，
+        # 代码段无法被正常渲染
+        # TODO：解决此问题
         value = md.convert(value)
         value = bleach_value(value)
-        value = bleach.linkify(value)
-
+        # linkify 会过滤 pre 标签中的 span 标签，目前没有找到解决方案
+        # TODO: linkify 解决方案
+        # value = bleach.linkify(value, skip_tags=['pre'])
         setattr(model_instance, self.attname, value)
 
         return value

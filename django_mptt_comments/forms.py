@@ -1,18 +1,20 @@
 from django import forms
-from django_comments.forms import CommentForm
 
 from captcha.fields import CaptchaField
 from crequest.middleware import CrequestMiddleware
+from django_comments.forms import CommentForm
 
 
 class MPTTCommentForm(CommentForm):
     parent_id = forms.IntegerField(required=False, widget=forms.HiddenInput)
 
-    def __init__(self, target_object, data=None, initial=None, parent_id=None, **kwargs):
+    def __init__(self, target_object, data=None, initial=None, parent_id=None,
+                 **kwargs):
         if initial is None:
             initial = {}
         initial.update({'parent_id': parent_id})
-        super(MPTTCommentForm, self).__init__(target_object, data=data, initial=initial, **kwargs)
+        super(MPTTCommentForm, self).__init__(target_object, data=data,
+                                              initial=initial, **kwargs)
 
         current_request = CrequestMiddleware.get_request()
         if current_request.user.is_authenticated:

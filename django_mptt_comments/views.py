@@ -1,17 +1,15 @@
 import django_comments
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import DetailView, RedirectView
 from django.views.generic.edit import FormMixin
 from django_comments.views.comments import post_comment
 
+from .conf import ALLOW_ANONYMOUS
 from .forms import MPTTCommentForm
 from .models import MPTTComment
 
-from .conf import MPTT_COMMENTS_ALLOW_ANONYMOUS
-
-if MPTT_COMMENTS_ALLOW_ANONYMOUS:
+if ALLOW_ANONYMOUS:
     post_mptt_comment = post_comment
 else:
     post_mptt_comment = login_required(post_comment)
@@ -48,11 +46,13 @@ class CommentSuccessRedirectView(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         try:
             comment = self.comment
-            comment.content_object.get_absolute_url()  # 没有 get_absolute_url 方法后续跳转不会成功
+            # 没有 get_absolute_url 方法后续跳转不会成功
+            comment.content_object.get_absolute_url()
 
             if self.comment.is_public and not self.comment.is_removed:
                 self.url = comment.get_absolute_url()
         except AttributeError:
             pass
-        return super(CommentSuccessRedirectView, self).get_redirect_url(*args,
-                                                                        **kwargs)
+        return super(
+            CommentSuccessRedirectView, self
+        ).get_redirect_url(*args, **kwargs)

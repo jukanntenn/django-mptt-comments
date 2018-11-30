@@ -1,4 +1,6 @@
 from django.conf import settings
+from django.utils.text import slugify
+from markdown.extensions.toc import TocExtension
 
 _DEFAULT_ALLOWED_TAGS = [
     'address', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'dd', 'div',
@@ -21,9 +23,10 @@ _DEFAULT_ALLOWED_ATTRIBUTES = {
 _DEFAULT_MARKDOWN_EXTENSIONS = [
     'markdown.extensions.extra',
     'markdown.extensions.codehilite',
+    TocExtension(slugify=slugify),
 ]
 
-MPTT_COMMENTS_ALLOW_ANONYMOUS = getattr(
+ALLOW_ANONYMOUS = getattr(
     settings,
     'MPTT_COMMENTS_ALLOW_ANONYMOUS',
     True
