@@ -10,8 +10,10 @@ from ..models import MPTTComment, MPTTCommentFlag
 
 
 class FlagMPTTCommentView(LoginRequiredMixin, TemplateResponseMixin, SingleObjectMixin, View):
-    template_name = 'comments/flag.html'
+    template_name = 'django_mptt_comments/flag.html'
     context_object_name = 'comment'
+    model = MPTTComment
+    pk_url_kwarg = 'comment_pk'
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -20,8 +22,14 @@ class FlagMPTTCommentView(LoginRequiredMixin, TemplateResponseMixin, SingleObjec
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         perform_flag(request, self.object)
-        return next_redirect(request, fallback=self.object or 'comments-flag-done',
+        return next_redirect(request, fallback='comments-flag-done',
                              c=self.object.pk)
+
+
+flag_done = confirmation_view(
+    template="django_mptt_comments/flagged.html",
+    doc="""Display a "comment was flagged" success page."""
+)
 
 
 class DeleteMPTTCommentView(PermissionRequiredMixin, TemplateResponseMixin, SingleObjectMixin, View):
@@ -97,8 +105,10 @@ highlight_done = confirmation_view(
 
 
 class LikeMPTTCommentView(LoginRequiredMixin, TemplateResponseMixin, SingleObjectMixin, View):
-    template_name = 'mptt_comments/like.html'
+    template_name = 'django_mptt_comments/like.html'
     context_object_name = 'comment'
+    model = MPTTComment
+    pk_url_kwarg = 'comment_pk'
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -107,13 +117,21 @@ class LikeMPTTCommentView(LoginRequiredMixin, TemplateResponseMixin, SingleObjec
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         perform_like(request, self.object)
-        return next_redirect(request, fallback=self.object or 'comments-like-done',
+        return next_redirect(request, fallback='mptt_comments_like_done',
                              c=self.object.pk)
 
 
+like_done = confirmation_view(
+    template="django_mptt_comments/liked.html",
+    doc="""Display a "comment was liked" success page."""
+)
+
+
 class DislikeMPTTCommentView(LoginRequiredMixin, TemplateResponseMixin, SingleObjectMixin, View):
-    template_name = 'mptt_comments/dislike.html'
+    template_name = 'django_mptt_comments/dislike.html'
     context_object_name = 'comment'
+    model = MPTTComment
+    pk_url_kwarg = 'comment_pk'
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -122,8 +140,14 @@ class DislikeMPTTCommentView(LoginRequiredMixin, TemplateResponseMixin, SingleOb
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         perform_dislike(request, self.object)
-        return next_redirect(request, fallback=self.object or 'comments-dislike-done',
+        return next_redirect(request, fallback='mptt_comments_dislike_done',
                              c=self.object.pk)
+
+
+dislike_done = confirmation_view(
+    template="django_mptt_comments/disliked.html",
+    doc="""Display a "comment was disliked" success page."""
+)
 
 
 def perform_flag(request, comment):
@@ -197,7 +221,7 @@ def perform_like(request, comment):
     flag, created = MPTTCommentFlag.objects.get_or_create(
         comment=comment,
         user=request.user,
-        flag=MPTTCommentFlag.ATTITUDE_LIKE
+        flag=MPTTCommentFlag.LIKE
     )
     if not created:
         flag.delete()
@@ -205,7 +229,7 @@ def perform_like(request, comment):
     MPTTCommentFlag.objects.filter(
         comment=comment,
         user=request.user,
-        flag=MPTTCommentFlag.ATTITUDE_DISLIKE
+        flag=MPTTCommentFlag.DISLIKE
     ).delete()
 
     signals.comment_was_flagged.send(
@@ -221,7 +245,7 @@ def perform_dislike(request, comment):
     flag, created = MPTTCommentFlag.objects.get_or_create(
         comment=comment,
         user=request.user,
-        flag=MPTTCommentFlag.ATTITUDE_DISLIKE
+        flag=MPTTCommentFlag.DISLIKE
     )
     if not created:
         flag.delete()
@@ -229,7 +253,7 @@ def perform_dislike(request, comment):
     MPTTCommentFlag.objects.filter(
         comment=comment,
         user=request.user,
-        flag=MPTTCommentFlag.ATTITUDE_LIKE
+        flag=MPTTCommentFlag.LIKE
     ).delete()
 
     signals.comment_was_flagged.send(

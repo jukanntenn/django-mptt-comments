@@ -27,5 +27,20 @@ urlpatterns = [
     url(r'^deleted/$', moderation_views.delete_done,
         name='mptt_comments_delete_done'),
 
+    url(r'^flag/(?P<comment_pk>[0-9]+)/$', moderation_views.FlagMPTTCommentView.as_view(),
+        name='mptt_comments_flag'),
+    url(r'^flagged/$', moderation_views.flag_done,
+        name='mptt_comments_flag_done'),
+
+    url(r'^like/(?P<comment_pk>[0-9]+)/$', moderation_views.LikeMPTTCommentView.as_view(),
+        name='mptt_comments_like'),
+    url(r'^liked/$', moderation_views.like_done,
+        name='mptt_comments_like_done'),
+
+    url(r'^dislike/(?P<comment_pk>[0-9]+)/$', moderation_views.DislikeMPTTCommentView.as_view(),
+        name='mptt_comments_dislike'),
+    url(r'^disliked/$', moderation_views.dislike_done,
+        name='mptt_comments_dislike_done'),
+
     url(r'^', include('django_comments.urls')),
 ]
