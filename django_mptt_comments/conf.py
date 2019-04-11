@@ -1,8 +1,9 @@
-from django.conf import settings
-from django.utils.text import slugify
-from markdown.extensions.toc import TocExtension
+from collections import ChainMap
 
-_DEFAULT_ALLOWED_TAGS = [
+from django.conf import settings as django_settings
+from django.core.exceptions import ImproperlyConfigured
+
+DEFAULT_COMMENT_HTML_TAG_WHITELIST = [
     'address', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'dd', 'div',
     'dl', 'dt', 'figcaption', 'figure', 'hr', 'li', 'ol', 'p', 'pre', 'ul',
     'a', 'abbr', 'b', 'br', 'cite', 'code', 'em', 'i', 'kbd', 'mark', 'q', 's',
@@ -11,7 +12,7 @@ _DEFAULT_ALLOWED_TAGS = [
     'thead', 'tr', 'dfn', 'acronym',
 ]
 
-_DEFAULT_ALLOWED_ATTRIBUTES = {
+DEFAULT_COMMENT_HTML_ATTRIBUTE_WHITELIST = {
     'a': ['href', 'title'],
     'abbr': ['title'],
     'acronym': ['title'],
@@ -20,32 +21,21 @@ _DEFAULT_ALLOWED_ATTRIBUTES = {
     'img': ['src'],
 }
 
-_DEFAULT_MARKDOWN_EXTENSIONS = [
-    'markdown.extensions.extra',
-    'markdown.extensions.codehilite',
-    TocExtension(slugify=slugify),
-]
 
-ALLOW_ANONYMOUS = getattr(
-    settings,
-    'MPTT_COMMENTS_ALLOW_ANONYMOUS',
-    True
-)
+class Settings(object):
+    defaults = {
+        'ANONYMOUS_COMMENT_ALLOWED': False,
+        'EDIT_COMMENT_ALLOWED': False,
 
-ALLOWED_TAGS = getattr(
-    settings,
-    'MPTT_COMMENTS_ALLOWED_TAGS',
-    _DEFAULT_ALLOWED_TAGS
-)
+        'COMMENT_HTML_TAG_WHITELIST': DEFAULT_COMMENT_HTML_TAG_WHITELIST,
+        'COMMENT_HTML_ATTRIBUTE_WHITELIST': DEFAULT_COMMENT_HTML_ATTRIBUTE_WHITELIST,
+    }
 
-ALLOWED_ATTRIBUTES = getattr(
-    settings,
-    'MPTT_COMMENTS_ALLOWED_ATTRIBUTES',
-    _DEFAULT_ALLOWED_ATTRIBUTES
-)
+    def __getattr__(self, attribute):
+        user_settings = getattr(django_settings, 'MPTT_COMMENTS', {})
+        if attribute in self.defaults:
+            return ChainMap(user_settings, self.defaults).get(attribute)
+        raise ImproperlyConfigured("django-mptt-comments doesn't have such setting: %s." % attribute)
 
-MARKDOWN_EXTENSIONS = getattr(
-    settings,
-    'MPTT_COMMENTS_MARKDOWN_EXTENSIONS',
-    _DEFAULT_MARKDOWN_EXTENSIONS
-)
+
+settings = Settings()

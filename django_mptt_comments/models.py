@@ -1,13 +1,16 @@
-# -*- coding: utf-8 -*-
 import bleach
+
+import django_comments
 import markdown
+from django.conf import settings as django_settings
 from django.db import models
 from django.db.models import TextField
+from django.utils import timezone
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django_comments.models import CommentAbstractModel
 from mptt.models import MPTTModel, TreeForeignKey
 
-from .conf import MARKDOWN_EXTENSIONS
 from .utils import bleach_value
 
 
@@ -34,7 +37,7 @@ class MarkedTextField(TextField):
         if value is None or value == '':
             return value
 
-        md = markdown.Markdown(extensions=MARKDOWN_EXTENSIONS)
+        md = markdown.Markdown(extensions=[])
         # Markdown 文本测试存在一个问题，如果原始 html 文本下跟一段 fenced 代码段，
         # 代码段无法被正常渲染
         # TODO：解决此问题
@@ -69,3 +72,43 @@ class MPTTComment(MPTTModel, CommentAbstractModel):
 
     class MPTTMeta:
         order_insertion_by = ['submit_date']
+
+
+comment_model = django_comments.get_model()
+
+
+@python_2_unicode_compatible
+class MPTTCommentFlag(models.Model):
+    user = models.ForeignKey(
+        django_settings.AUTH_USER_MODEL, verbose_name=_('user'), on_delete=models.CASCADE,
+    )
+    comment = models.ForeignKey(
+        # Translators: 'comment' is a noun here.
+        comment_model, verbose_name=_('comment'), on_delete=models.CASCADE,
+    )
+    # Translators: 'flag' is a noun here.
+    flag = models.CharField(_('flag'), max_length=30, db_index=True)
+    flag_date = models.DateTimeField(_('date'), default=None)
+
+    # Constants for flag types
+    SUGGEST_REMOVAL = "removal suggestion"
+    MODERATOR_DELETION = "moderator deletion"
+    MODERATOR_APPROVAL = "moderator approval"
+    MODERATOR_HIGHLIGHT = "moderator highlight"
+    LIKE = "like"
+    DISLIKE = "dislike"
+
+    class Meta:
+        unique_together = [('user', 'comment', 'flag')]
+        verbose_name = _('mpttcomment flag')
+        verbose_name_plural = _('mpttcomment flags')
+
+    def __str__(self):
+        return "%s flag of comment ID %s by %s" % (
+            self.flag, self.comment_id, self.user.get_username()
+        )
+
+    def save(self, *args, **kwargs):
+        if self.flag_date is None:
+            self.flag_date = timezone.now()
+        super(MPTTCommentFlag, self).save(*args, **kwargs)

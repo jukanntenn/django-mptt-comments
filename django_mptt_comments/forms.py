@@ -1,18 +1,20 @@
-from django import forms
-
 from captcha.fields import CaptchaField
 from crequest.middleware import CrequestMiddleware
-from django_comments.forms import CommentForm
+from django import forms
+from django.utils.translation import ugettext_lazy as _
+from django_comments.forms import COMMENT_MAX_LENGTH, CommentForm
+
+from .models import MPTTComment
 
 
 class MPTTCommentForm(CommentForm):
-    parent_id = forms.IntegerField(required=False, widget=forms.HiddenInput)
+    parent_comment_pk = forms.IntegerField(required=False, widget=forms.HiddenInput)
 
-    def __init__(self, target_object, data=None, initial=None, parent_id=None,
+    def __init__(self, target_object, data=None, initial=None, parent_comment_pk=None,
                  **kwargs):
         if initial is None:
             initial = {}
-        initial.update({'parent_id': parent_id})
+        initial.update({'parent_comment_pk': parent_comment_pk})
         super(MPTTCommentForm, self).__init__(target_object, data=data,
                                               initial=initial, **kwargs)
 
@@ -25,5 +27,13 @@ class MPTTCommentForm(CommentForm):
 
     def get_comment_create_data(self, **kwargs):
         data = super(MPTTCommentForm, self).get_comment_create_data(**kwargs)
-        data['parent_id'] = self.cleaned_data.get('parent_id')
+        data['parent_comment_pk'] = self.cleaned_data.get('parent_comment_pk')
         return data
+
+
+class CommentEditForm(forms.ModelForm):
+    comment = forms.CharField(label=_('Comment'), widget=forms.Textarea, max_length=COMMENT_MAX_LENGTH)
+
+    class Meta:
+        model = MPTTComment
+        fields = ['comment']

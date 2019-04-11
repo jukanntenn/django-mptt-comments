@@ -1,7 +1,7 @@
 import bleach
 
-from .conf import ALLOWED_ATTRIBUTES, ALLOWED_TAGS
+from .conf import settings
 
 
-def bleach_value(value, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES):
+def bleach_value(value, tags=settings.COMMENT_HTML_TAG_WHITELIST, attributes=settings.COMMENT_HTML_ATTRIBUTE_WHITELIST):
     return bleach.clean(value, tags=tags, attributes=attributes)
